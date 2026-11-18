@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clickly - Cari Fotografer & Sewa Alat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { primary: '#FF6B35', secondary: '#00A8E8' } } }
+        }
+    </script>
+    <style>
+        .gradient-brand { background: linear-gradient(135deg, #FF6B35 0%, #00A8E8 100%); }
+        .text-gradient { background: linear-gradient(135deg, #FF6B35 0%, #00A8E8 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .bg-glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); }
+        .page-view { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .page-view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-orange-200">
+
+    <!-- NAVBAR -->
+    <header class="sticky top-0 z-40 bg-glass border-b border-slate-200/80 transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <a href="#" onclick="switchPage('home')" class="flex items-center gap-3 group">
+                <div class="w-12 h-12 rounded-2xl bg-white shadow-md border border-slate-100 flex items-center justify-center p-1.5 group-hover:scale-105 transition-transform">
+                    <svg viewBox="0 0 200 200" class="w-full h-full">
+                        <defs><linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00A8E8" /><stop offset="50%" stop-color="#FF8A5B" /><stop offset="100%" stop-color="#FF6B35" /></linearGradient></defs>
+                        <path d="M 40 80 Q 40 60 60 60 L 80 60 L 90 45 Q 95 40 105 40 L 125 40 Q 135 40 140 45 L 150 60 L 170 60 Q 190 60 190 80 L 190 140 Q 190 160 170 160 L 60 160 Q 40 160 40 140 Z" fill="none" stroke="url(#logoGrad)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="160" cy="80" r="6" fill="#FF8A5B"/>
+                        <circle cx="110" cy="110" r="32" fill="none" stroke="url(#logoGrad)" stroke-width="12"/>
+                        <path d="M 125 115 L 165 155 L 148 160 L 160 185 L 148 190 L 136 165 L 120 178 Z" fill="#FF6B35" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-2xl font-black tracking-tight flex items-center"><span class="text-[#00A8E8]">CLIC</span><span class="text-[#FF8A5B]">K</span><span class="text-[#FF6B35]">LY</span></span>
+                </div>
+            </a>
+
+            <nav class="hidden md:flex items-center gap-8 font-medium text-slate-600 text-sm">
+                <button onclick="switchPage('home')" id="nav-home" class="hover:text-primary transition-colors font-bold text-primary">Beranda</button>
+                <button onclick="switchPage('marketplace')" id="nav-marketplace" class="hover:text-primary transition-colors">Cari Fotografer</button>
+                <button onclick="switchPage('rental')" id="nav-rental" class="hover:text-primary transition-colors">Sewa Alat</button>
+                <button onclick="switchPage('howitworks')" id="nav-howitworks" class="hover:text-primary transition-colors">Cara Kerja</button>
+                <button onclick="switchPage('dashboard')" id="nav-dashboard" class="hover:text-primary transition-colors">Dashboard</button>
+            </nav>
+
+            <div id="navAuthSection" class="flex items-center gap-3">
+                <button onclick="openAuthModal('login')" class="px-5 py-2.5 rounded-full text-slate-700 font-semibold text-sm hover:bg-slate-100">Masuk</button>
+                <button onclick="openAuthModal('register')" class="px-6 py-2.5 rounded-full gradient-brand text-white font-semibold text-sm shadow-lg">Daftar</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="min-h-[80vh]">
+        <!-- TAB 1: BERANDA -->
+        <div id="view-home" class="page-view active py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-100/80 text-primary text-xs font-bold"><i data-lucide="trending-up" class="w-4 h-4"></i> Mendukung SDG 8: Pertumbuhan Ekonomi Kreatif</div>
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 leading-[1.15] tracking-tight">Clickly: <span class="text-gradient">Cari Fotografer,</span> Sekali Klik Beres!</h1>
+                    <p class="text-lg text-slate-600">Platform marketplace digital terpercaya yang menghubungkan Anda dengan fotografer profesional di seluruh Indonesia.</p>
+                    <div class="pt-4 flex flex-wrap gap-4">
+                        <button onclick="switchPage('marketplace')" class="px-8 py-4 gradient-brand text-white font-bold rounded-2xl shadow-lg hover:scale-105 transition-all flex items-center gap-2"><i data-lucide="search" class="w-5 h-5"></i> CARI FOTOGRAFER</button>
+                        <button onclick="switchPage('rental')" class="px-8 py-4 bg-white border text-slate-800 font-bold rounded-2xl shadow-sm hover:bg-slate-50 transition-all flex items-center gap-2"><i data-lucide="camera" class="w-5 h-5 text-primary"></i> SEWA ALAT</button>
+                    </div>
+                </div>
+                <div class="lg:col-span-5 hidden lg:block"><img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80" class="w-full h-96 object-cover rounded-3xl shadow-lg border-4 border-white"></div>
+            </div>
+        </div>
+
+        <!-- TAB 2: MARKETPLACE -->
+        <div id="view-marketplace" class="page-view py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+                    <div><h2 class="text-3xl font-black text-slate-900">Katalog Talent & Fotografer</h2></div>
+                    <div id="compareBar" class="hidden items-center gap-3 bg-orange-50 border p-2.5 rounded-2xl">
+                        <span class="text-xs font-bold px-2"><span id="compareCount">0</span>/3 dipilih</span>
+                        <button onclick="openCompareModal()" class="px-4 py-2 gradient-brand text-white text-xs font-bold rounded-xl shadow-md">Bandingkan</button>
+                        <button onclick="clearComparison()" class="p-2 text-slate-400"><i data-lucide="x" class="w-4 h-4"></i></button>
+                    </div>
+                </div>
+                <div id="photographerGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+            </div>
+        </div>
+
+        <!-- TAB 3: SEWA ALAT -->
+        <div id="view-rental" class="page-view py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-10"><h2 class="text-3xl font-black text-slate-900">Sewa Alat Fotografi Profesional</h2></div>
+                <div id="equipmentGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+            </div>
+        </div>
+
+        <!-- TAB 4: CARA KERJA -->
+        <div id="view-howitworks" class="page-view py-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-3xl font-black text-slate-900 mb-12">Cara Kerja Clickly</h2>
+                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border"><h3 class="font-bold mb-2">1. Cari</h3><p class="text-xs">Temukan fotografer.</p></div>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border"><h3 class="font-bold mb-2">2. Bandingkan</h3><p class="text-xs">Pilih 3 fotografer.</p></div>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border"><h3 class="font-bold mb-2">3. Booking & Bayar</h3><p class="text-xs">Bayar pakai QRIS.</p></div>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border"><h3 class="font-bold mb-2">4. Sesi Selesai!</h3><p class="text-xs">Sesi foto dilakukan.</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: DASHBOARD -->
+        <div id="view-dashboard" class="page-view py-12 bg-slate-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl font-black text-slate-900 mb-8">Dashboard Fotografer</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-primary rounded-3xl p-6 text-white shadow-xl"><h3 class="text-3xl font-black" id="dashTotalIncome">Rp 0</h3><p class="text-xs text-white/80 mt-1">Pendapatan Total</p></div>
+                    <div class="bg-secondary rounded-3xl p-6 text-white shadow-xl"><h3 class="text-3xl font-black" id="dashTotalOrders">0</h3><p class="text-xs text-white/80 mt-1">Booking Masuk</p></div>
+                </div>
+                <div class="bg-white rounded-3xl p-8 border shadow-sm">
+                    <h3 class="font-bold text-lg mb-4 text-slate-800">Daftar Pesanan Masuk (Real-time)</h3>
+                    <div id="dashboardOrdersList" class="space-y-4"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL AUTH -->
+    <div id="authModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl relative">
+            <button onclick="closeModal('authModal')" class="absolute top-6 right-6 text-slate-400"><i data-lucide="x" class="w-6 h-6"></i></button>
+            <h3 id="authTitle" class="text-2xl font-black text-center mb-6">Masuk ke Clickly</h3>
+            <div class="grid grid-cols-2 p-1.5 bg-slate-100 rounded-2xl mb-6">
+                <button type="button" id="roleUserBtn" onclick="switchRole('user')" class="py-2 text-xs font-bold rounded-xl bg-white text-slate-800 shadow-sm">User / Klien</button>
+                <button type="button" id="rolePhotoBtn" onclick="switchRole('photographer')" class="py-2 text-xs font-bold rounded-xl text-slate-500">Fotografer</button>
+            </div>
+            <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                <input type="hidden" id="selectedRole" value="user">
+                <input type="hidden" id="authMode" value="login">
+                <input type="email" id="authEmail" placeholder="Email" required class="w-full px-4 py-3 rounded-2xl border text-sm">
+                <input type="password" placeholder="Password" required class="w-full px-4 py-3 rounded-2xl border text-sm">
+                <div id="photographerFields" class="hidden space-y-4 border-t pt-4">
+                    <input type="text" id="photoName" placeholder="Nama Lengkap / Studio" class="w-full px-4 py-2.5 rounded-xl border text-sm">
+                    <div class="grid grid-cols-2 gap-3">
+                        <select id="photoCategory" class="w-full px-3 py-2.5 rounded-xl border text-xs"><option>Wisuda</option><option>Pernikahan</option></select>
+                        <select id="photoLocation" class="w-full px-3 py-2.5 rounded-xl border text-xs"><option>Jabodetabek</option><option>Bandung</option></select>
+                    </div>
+                    <input type="number" id="photoPrice" placeholder="Tarif Dasar (Rp)" class="w-full px-4 py-2.5 rounded-xl border text-sm">
+                    <input type="url" id="photoCoverUrl" placeholder="URL Foto Sampul" class="w-full px-4 py-2.5 rounded-xl border text-sm">
+                </div>
+                <button type="submit" class="w-full py-3.5 gradient-brand text-white font-bold rounded-2xl">Lanjutkan</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL COMPARE -->
+    <div id="compareModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-4xl w-full p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeModal('compareModal')" class="absolute top-6 right-6 text-slate-400"><i data-lucide="x" class="w-6 h-6"></i></button>
+            <h3 class="text-2xl font-black mb-6">Matriks Perbandingan</h3>
+            <div id="compareMatrixContainer" class="overflow-x-auto"></div>
+        </div>
+    </div>
+
+    <!-- MODAL DETAIL -->
+    <div id="detailModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-4xl w-full p-6 sm:p-8 relative">
+            <button onclick="closeModal('detailModal')" class="absolute top-6 right-6 text-slate-400 z-10"><i data-lucide="x" class="w-6 h-6"></i></button>
+            <div id="detailModalContent" class="grid md:grid-cols-12 gap-8"></div>
+        </div>
+    </div>
+
+    <!-- MODAL QRIS -->
+    <div id="paymentModal" class="fixed inset-0 z-50 hidden bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-8 relative text-center">
+            <button onclick="closeModal('paymentModal')" class="absolute top-6 right-6 text-slate-400"><i data-lucide="x" class="w-6 h-6"></i></button>
+            <i data-lucide="qr-code" class="w-12 h-12 mx-auto text-primary mb-3"></i>
+            <h3 class="text-xl font-black">Scan QRIS</h3>
+            <div class="my-6 p-4 bg-slate-50 border rounded-3xl inline-block"><img id="qrisImage" src="" class="w-56 h-56 mx-auto object-contain rounded-xl"></div>
+            <button onclick="confirmPaymentSuccess()" class="w-full py-3.5 bg-emerald-500 text-white font-bold rounded-2xl">Saya Sudah Bayar</button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        function switchPage(pageId) {
+            document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+            document.getElementById('view-' + pageId).classList.add('active');
+            ['home', 'marketplace', 'rental', 'howitworks', 'dashboard'].forEach(id => {
+                const btn = document.getElementById('nav-' + id);
+                if(btn) btn.className = id === pageId ? "hover:text-primary transition-colors font-bold text-primary" : "hover:text-primary transition-colors";
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        const SUPABASE_URL = 'https://jwjzbqisesreuyotnjxu.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_BUXo9A8fhlN0e-RICss1MA_gBASimd0';
+        let supabaseClient = typeof supabase !== 'undefined' ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+        let currentPhotographers = [];
+        let currentEquipments = [];
+        let selectedForCompare = [];
+        let currentUser = JSON.parse(localStorage.getItem('clickly_user')) || null;
+        let activeBookings = JSON.parse(localStorage.getItem('clickly_bookings')) || [];
+
+        // DUMMY DATA AGAR TAMPILAN TIDAK KOSONG JIKA SUPABASE BELUM ADA TABELNYA
+        const fallbackPhotographers = [
+            { id: '1', name: 'Aldo Studio', category: 'Pernikahan', location: 'Jabodetabek', price: 1500000, coverurl: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80' },
+            { id: '2', name: 'Budi Portrait', category: 'Wisuda', location: 'Bandung', price: 800000, coverurl: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=600&q=80' },
+            { id: '3', name: 'Clara Product', category: 'Produk UMKM', location: 'Surabaya', price: 500000, coverurl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80' }
+        ];
+
+        const fallbackEquipments = [
+            { id: '1', name: 'Sony A7III Body Only', category: 'Kamera', price: 250000, imageurl: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=500&q=80', description: 'Full-frame mirrorless andalan profesional.' },
+            { id: '2', name: 'Canon EF 50mm f/1.8', category: 'Lensa', price: 50000, imageurl: 'https://images.unsplash.com/photo-1617005082833-1e6bc03e2c38?auto=format&fit=crop&w=500&q=80', description: 'Lensa fix sejuta umat untuk bokeh maksimal.' }
+        ];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            lucide.createIcons();
+            await loadPhotographersFromDB();
+            await loadEquipmentsFromDB();
+            await loadBookingsFromDB();
+            updateUserUIState();
+        });
+
+        // LOAD DATA FOTOGRAFER (Mendukung tabel 'photographers' maupun 'photographer')
+        async function loadPhotographersFromDB() {
+            let loaded = false;
+            if (supabaseClient) {
+                try {
+                    let res = await supabaseClient.from('photographers').select('*');
+                    if (res.data && res.data.length > 0) { currentPhotographers = res.data; loaded = true; }
+                    else {
+                        res = await supabaseClient.from('photographer').select('*');
+                        if (res.data && res.data.length > 0) { currentPhotographers = res.data; loaded = true; }
+                    }
+                } catch(e) { console.log("Supabase fetch error:", e); }
+            }
+            if (!loaded) { currentPhotographers = fallbackPhotographers; }
+            renderPhotographerGrid();
+        }
+
+        // LOAD DATA SEWA ALAT
+        async function loadEquipmentsFromDB() {
+            let loaded = false;
+            if (supabaseClient) {
+                try {
+                    const { data } = await supabaseClient.from('equipments').select('*');
+                    if (data && data.length > 0) { currentEquipments = data; loaded = true; }
+                } catch(e) { console.log(e); }
+            }
+            if (!loaded) { currentEquipments = fallbackEquipments; }
+            renderEquipmentGrid();
+        }
+
+        async function loadBookingsFromDB() {
+            if (supabaseClient) {
+                try {
+                    const { data } = await supabaseClient.from('bookings').select('*');
+                    if (data) activeBookings = data;
+                } catch(e) { console.log(e); }
+            }
+            renderDashboardOrders();
+        }
+
+        function renderPhotographerGrid() {
+            const grid = document.getElementById('photographerGrid');
+            if(!grid) return; grid.innerHTML = '';
+            currentPhotographers.forEach(p => {
+                const isChecked = selectedForCompare.includes(p.id);
+                grid.innerHTML += `
+                    <div class="bg-white rounded-3xl border shadow-sm group">
+                        <div class="relative h-56 overflow-hidden">
+                            <img src="${p.coverurl || p.coverUrl || 'https://via.placeholder.com/600'}" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
+                            <span class="absolute top-4 left-4 bg-white/90 px-3 py-1 rounded-full text-xs font-bold">${p.category}</span>
+                            <label class="absolute top-4 right-4 bg-white/90 p-2 rounded-xl flex items-center gap-1.5 cursor-pointer text-xs font-bold"><input type="checkbox" onchange="toggleCompare('${p.id}')" ${isChecked ? 'checked' : ''}> Bandingkan</label>
+                        </div>
+                        <div class="p-6">
+                            <span class="text-xs text-slate-500 mb-1">📍 ${p.location || 'Jabodetabek'}</span>
+                            <h3 class="font-bold text-lg">${p.name}</h3>
+                            <div class="pt-4 mt-4 border-t flex justify-between items-center">
+                                <div><span class="text-[10px] text-slate-400 block">Tarif</span><span class="font-black">Rp ${Number(p.price).toLocaleString('id-ID')}</span></div>
+                                <button onclick="openDetailModal('${p.id}')" class="px-4 py-2 bg-slate-100 hover:bg-primary hover:text-white font-bold text-xs rounded-xl">Lihat Profil</button>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+            lucide.createIcons();
+        }
+
+        function renderEquipmentGrid() {
+            const grid = document.getElementById('equipmentGrid');
+            if(!grid) return; grid.innerHTML = '';
+            currentEquipments.forEach(eq => {
+                grid.innerHTML += `
+                    <div class="bg-white rounded-3xl border shadow-sm overflow-hidden flex flex-col justify-between">
+                        <div class="p-4">
+                            <img src="${eq.imageurl || eq.imageUrl || 'https://via.placeholder.com/400'}" class="w-full h-48 object-cover rounded-2xl mb-4">
+                            <span class="text-[10px] font-bold text-primary bg-orange-50 px-2.5 py-1 rounded-full">${eq.category}</span>
+                            <h3 class="font-bold text-lg mt-2">${eq.name}</h3>
+                            <p class="text-xs text-slate-500 mt-1">${eq.description || ''}</p>
+                        </div>
+                        <div class="p-4 pt-0 mt-2 border-t flex items-center justify-between">
+                            <div><span class="text-[10px] text-slate-400 block">Tarif / Hari</span><strong class="font-black">Rp ${Number(eq.price).toLocaleString('id-ID')}</strong></div>
+                            <button onclick="alert('Fitur sewa alat siap digunakan!')" class="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl">Sewa</button>
+                        </div>
+                    </div>`;
+            });
+            lucide.createIcons();
+        }
+
+        function toggleCompare(id) {
+            if (selectedForCompare.includes(id)) selectedForCompare = selectedForCompare.filter(i => i !== id);
+            else if (selectedForCompare.length >= 3) { alert('Maksimal 3!'); return; }
+            else selectedForCompare.push(id);
+            document.getElementById('compareCount').innerText = selectedForCompare.length;
+            document.getElementById('compareBar').style.display = selectedForCompare.length > 0 ? 'flex' : 'none';
+        }
+        function clearComparison() { selectedForCompare = []; document.getElementById('compareBar').style.display = 'none'; renderPhotographerGrid(); }
+
+        function openCompareModal() {
+            const list = currentPhotographers.filter(p => selectedForCompare.includes(p.id));
+            document.getElementById('compareMatrixContainer').innerHTML = `
+                <table class="w-full text-left text-sm">
+                    <thead><tr class="border-b"><th class="p-3">Info</th>${list.map(p => `<th class="p-3 font-black">${p.name}</th>`).join('')}</tr></thead>
+                    <tbody class="divide-y">
+                        <tr><td class="p-3">Tarif</td>${list.map(p => `<td class="p-3 font-bold text-primary">Rp ${Number(p.price).toLocaleString('id-ID')}</td>`).join('')}</tr>
+                        <tr><td class="p-3"></td>${list.map(p => `<td class="p-3"><button onclick="openDetailModal('${p.id}')" class="w-full py-2 bg-primary text-white font-bold rounded-lg">Pilih Ini</button></td>`).join('')}</tr>
+                    </tbody>
+                </table>`;
+            openModal('compareModal');
+        }
+
+        function openDetailModal(id) {
+            const p = currentPhotographers.find(i => i.id == id);
+            if(!p) return;
+            document.getElementById('detailModalContent').innerHTML = `
+                <div class="md:col-span-7"><img src="${p.coverurl || p.coverUrl || 'https://via.placeholder.com/600'}" class="w-full h-80 object-cover rounded-3xl"><h2 class="text-2xl font-black mt-2">${p.name}</h2></div>
+                <div class="md:col-span-5 bg-slate-50 p-6 rounded-3xl border space-y-4">
+                    <h3 class="font-bold">Pesan Sesi Foto</h3>
+                    <input type="date" id="bookingDate" class="w-full px-4 py-2.5 rounded-xl border text-xs font-semibold">
+                    <button onclick="startCheckout('${p.id}', ${p.price}, '${p.name}')" class="w-full py-3.5 bg-primary text-white font-bold rounded-2xl">Bayar Rp ${Number(p.price).toLocaleString('id-ID')}</button>
+                </div>`;
+            closeModal('compareModal'); openModal('detailModal');
+        }
+
+        let currentPayingOrder = null;
+        function startCheckout(id, amount, name) {
+            const date = document.getElementById('bookingDate').value;
+            if (!date) return alert('Pilih tanggal dulu!');
+            const trxId = 'CLK-' + Math.floor(100000 + Math.random() * 900000);
+            currentPayingOrder = { id: trxId, photographerid: String(id), photographername: name, amount: Number(amount), date, status: 'Menunggu' };
+            document.getElementById('qrisImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${trxId}`;
+            closeModal('detailModal'); openModal('paymentModal');
+        }
+
+        async function confirmPaymentSuccess() {
+            if (!currentPayingOrder) return;
+            currentPayingOrder.status = 'Lunas';
+            if (supabaseClient) {
+                try { await supabaseClient.from('bookings').insert([currentPayingOrder]); } catch(e) { console.log(e); }
+            }
+            activeBookings.push(currentPayingOrder);
+            localStorage.setItem('clickly_bookings', JSON.stringify(activeBookings));
+            alert('Pembayaran Berhasil!');
+            closeModal('paymentModal'); renderDashboardOrders();
+        }
+
+        function switchRole(role) {
+            document.getElementById('selectedRole').value = role;
+            document.getElementById('photographerFields').style.display = role === 'photographer' ? 'block' : 'none';
+        }
+        
+        async function handleAuthSubmit(e) {
+            e.preventDefault();
+            const role = document.getElementById('selectedRole').value;
+            if (role === 'photographer') {
+                const newT = { id: String(Date.now()), name: document.getElementById('photoName').value, price: Number(document.getElementById('photoPrice').value), category: document.getElementById('photoCategory').value, location: document.getElementById('photoLocation').value, coverurl: document.getElementById('photoCoverUrl').value };
+                if (supabaseClient) {
+                    try { await supabaseClient.from('photographers').insert([newT]); } catch(e) { console.log(e); }
+                }
+                currentPhotographers.push(newT); renderPhotographerGrid();
+            }
+            currentUser = { email: document.getElementById('authEmail').value, role };
+            localStorage.setItem('clickly_user', JSON.stringify(currentUser));
+            closeModal('authModal'); updateUserUIState(); switchPage(role === 'photographer' ? 'dashboard' : 'home');
+        }
+
+        function updateUserUIState() {
+            if (currentUser) {
+                document.getElementById('navAuthSection').innerHTML = `<button onclick="if(currentUser.role==='photographer') switchPage('dashboard')" class="text-xs bg-slate-100 px-3 py-2 rounded-full font-bold">${currentUser.email}</button><button onclick="localStorage.removeItem('clickly_user'); location.reload()" class="text-xs text-rose-500 font-bold ml-1">Keluar</button>`;
+                if (currentUser.role === 'photographer') renderDashboardOrders();
+            }
+        }
+
+        function renderDashboardOrders() {
+            const list = document.getElementById('dashboardOrdersList');
+            if(!list) return; list.innerHTML = activeBookings.length ? '' : '<p class="text-xs text-slate-400">Belum ada pesanan.</p>';
+            let total = 0;
+            activeBookings.forEach(b => { total += Number(b.amount); list.innerHTML += `<div class="p-4 bg-white border rounded-2xl mb-2 text-xs"><span class="text-emerald-600 font-bold">${b.status}</span><p class="font-bold mt-1">Trx: ${b.id} - ${b.photographername || 'Sesi'}</p><p class="text-primary font-black mt-1">Rp ${Number(b.amount).toLocaleString('id-ID')}</p></div>`; });
+            if(document.getElementById('dashTotalOrders')) document.getElementById('dashTotalOrders').innerText = activeBookings.length;
+            if(document.getElementById('dashTotalIncome')) document.getElementById('dashTotalIncome').innerText = `Rp ${total.toLocaleString('id-ID')}`;
+        }
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+    </script>
+</body>
+</html>
